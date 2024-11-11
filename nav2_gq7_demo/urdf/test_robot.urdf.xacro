@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="test">
+  <!-- Materials to make the antennas stand out from the robot and antenna bar -->
+  <material name="black">
+    <color rgba="0.0 0.0 0.0 1.0" />
+  </material>
+
+  <!-- Include the GQ7 xacro file to make it easier to place -->
+  <xacro:include filename="$(find microstrain_inertial_description)/urdf/gq7.urdf.xacro" />
+
+  <!-- Pretend robot (just a cylinder) -->
+  <link name="base_link" >
+    <visual>
+      <origin xyz="0 0 0.25" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.5" radius="0.2" />
+      </geometry>
+    </visual>
+  </link> 
+
+  <!-- Antenna bar. Your antenna bar should be between 0.3 and 5.0 meters. 1 to 2 meters is typical -->
+  <link name="antenna_bar_link" >
+    <visual>
+      <geometry>
+        <box size="0.1 1.1 0.03" />
+      </geometry>
+    </visual>
+  </link>
+  <joint name="base_to_antenna_bar" type="fixed">
+    <parent link="base_link" />
+    <child link="antenna_bar_link" />
+    <origin xyz="0 0 0.515" />
+  </joint>
+
+  <!-- Antennas offset from the end of the antenna bar by 5 cm -->
+  <link name="right_antenna_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.02" />
+      </geometry>
+      <material name="black" />
+    </visual>
+  </link>
+  <link name="left_antenna_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.02" />
+      </geometry>
+      <material name="black" />
+    </visual>
+  </link>
+  <joint name="antenna_bar_to_right_antenna" type="fixed">
+    <parent link="antenna_bar_link" />
+    <child link="right_antenna_link" />
+    <origin xyz="0 -0.5 0.02" />
+  </joint>
+  <joint name="antenna_bar_to_left_antenna" type="fixed">
+    <parent link="antenna_bar_link" />
+    <child link="left_antenna_link" />
+    <origin xyz="0 0.5 0.02" />
+  </joint>
+
+  <!-- GQ7 mounted in the center of the antenna bar -->
+  <xacro:gq7 parent="antenna_bar_link" name="gq7_link">
+    <origin xyz="0 0 0.02" rpy="0 0 0" />
+  </xacro:gq7>
+
+  <!-- Lidar mounted on top of the GQ7 -->
+  <!-- Remove this before checkin -->
+  <link name="lidar3d_0_laser">
+  </link>
+  <joint name="antenna_bar_to_lidar" type="fixed">
+    <parent link="antenna_bar_link" />
+    <child link="lidar3d_0_laser" />
+    <origin xyz="0 0 0.04" />
+  </joint>
+</robot>
